@@ -1,0 +1,11 @@
+.notes {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  margin-top: 150px;
+}
+.App {
+  display: flex;
+  flex-direction: row;
+}
