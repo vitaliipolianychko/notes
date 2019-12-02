@@ -1,9 +1,4 @@
-import {
-  DELETE_NOTE,
-  ADD_NOTE,
-  UPDATE_NOTE,
-  UPDATE_NOTE_NAME
-} from "./actions";
+import { DELETE_NOTE, ADD_NOTE, UPDATE_NOTE } from "./actions";
 
 const initialState = { data: [] };
 const Notes = (state = initialState, action) => {
@@ -32,14 +27,6 @@ const Notes = (state = initialState, action) => {
         ...state,
         data: state.data
       };
-    case UPDATE_NOTE_NAME:
-      const currentName = state.data.findIndex(
-        note => note.id === action.payload.noteId
-      );
-      state.data[currentName].notesName = action.payload.noteName;
-      return Object.assign({}, state, {
-        data: state.data
-      });
     default:
       return state;
   }

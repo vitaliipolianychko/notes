@@ -2,46 +2,14 @@ import React from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import {
   deleteFolderAction,
   currentFolderIdAction
 } from "../../redux/folders/actions";
 import { deleteNoteAction } from "../../redux/notes/actions";
-
-import { makeStyles } from "@material-ui/core/styles";
-
-export const useStyles = makeStyles(theme => ({
-  menuItem: {
-    fontSize: "14px",
-    padding: "0 5px",
-    borderBottom: "1px dotted grey"
-  },
-  buttonMenu: {
-    outline: "none",
-    padding: 0,
-    background: "none",
-    border: "none",
-    marginLeft: 15,
-    marginBottom: 5,
-    cursor: "pointer",
-    fontSize: 14,
-    width: 18,
-    height: 18,
-    "&:hover": {
-      background: "white",
-      borderRadius: "50%",
-      marginTop: 5
-    }
-  },
-  marginMenu: {
-    marginLeft: 30,
-    marginTop: 25
-  },
-  Menu: {
-    margin: 0,
-    width: 100
-  }
-}));
+import { useStyles } from "./styles";
+import PropTypes from "prop-types";
 
 const mapStateToProps = state => {
   return {
@@ -50,41 +18,37 @@ const mapStateToProps = state => {
   };
 };
 const mapDispatchToProps = dispatch => {
-  return {
-    deleteFolder: folderId => {
-      dispatch(deleteFolderAction(folderId));
+  return bindActionCreators(
+    {
+      currentFolderIdAction,
+      deleteFolderAction,
+      deleteNoteAction
     },
-    deleteNotes: noteId => {
-      dispatch(deleteNoteAction(noteId));
-    },
-    currentFolder: folderId => {
-      dispatch(currentFolderIdAction(folderId));
-    }
-  };
+    dispatch
+  );
 };
 
 function SimpleMenu({
   folderId,
-  deleteFolder,
-  deleteNotes,
+  deleteFolderAction,
+  deleteNoteAction,
   setEditFolderName,
   submitData,
-  currentFolder,
+  currentFolderIdAction,
   dataNotes
 }) {
   const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
   const delFolder = () => {
-    deleteFolder(folderId);
+    deleteFolderAction(folderId);
     setAnchorEl(null);
     dataNotes.map(i => {
-      i.folderId === folderId && deleteNotes(i.id);
+      return i.folderId === folderId && deleteNoteAction(i.id);
     });
-    currentFolder(null);
+    currentFolderIdAction(null);
   };
   const editFolder = () => {
     setEditFolderName(true);
@@ -126,3 +90,14 @@ function SimpleMenu({
   );
 }
 export default connect(mapStateToProps, mapDispatchToProps)(SimpleMenu);
+SimpleMenu.propTypes = {
+  folderId: PropTypes.string,
+  deleteFolderAction: PropTypes.func,
+  deleteNoteAction: PropTypes.func,
+  setEditFolderName: PropTypes.func,
+  submitData: PropTypes.func,
+  currentFolderIdAction: PropTypes.func,
+  dataNotes: PropTypes.arrayOf(
+    PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string]))
+  )
+};

@@ -1,11 +1,24 @@
 .notes {
-  width: 60%;
+  width: 750px;
   display: flex;
   flex-direction: column;
-  margin: auto;
-  margin-top: 150px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
 }
 .App {
   display: flex;
   flex-direction: row;
+}
+
+@media only screen and (max-width: 768px) {
+  .App {
+    display: flex;
+    flex-direction: column;
+  }
+  .notes {
+    width: 300px;
+  }
 }

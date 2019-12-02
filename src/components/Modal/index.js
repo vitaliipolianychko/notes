@@ -1,57 +1,35 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react";
 import Modal from "@material-ui/core/Modal";
 import TextField from "@material-ui/core/TextField";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import { updateNoteAction } from "../../redux/notes/actions";
-
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
-
-function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`
-  };
-}
-
-const useStyles = makeStyles(theme => ({
-  paper: {
-    position: "absolute",
-    width: 400,
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    borderRadius: "5px",
-    boxShadow: theme.shadows[5]
-  }
-}));
+import { useStyles } from "./styles";
+import PropTypes from "prop-types";
 
 const mapDispatchToProps = dispatch => {
-  return {
-    updateNote: (noteId, messageNote) => {
-      dispatch(updateNoteAction(noteId, messageNote));
-    }
-  };
+  return bindActionCreators(
+    {
+      updateNoteAction
+    },
+    dispatch
+  );
 };
 
 function SimpleModal({
   open,
   currentNote,
   setCurrentNote,
-  updateNote,
+  updateNoteAction,
   activeNoteId,
   handleClose,
   input
 }) {
   const classes = useStyles();
-  // getModalStyle is not a pure function, we roll the style only on the first render
-  const [modalStyle] = React.useState(getModalStyle);
-
+  const saveNoteText = event => {
+    setCurrentNote(event.target.value);
+    updateNoteAction(activeNoteId, event.target.value);
+  };
   return (
     <div>
       <Modal
@@ -60,17 +38,14 @@ function SimpleModal({
         open={open}
         onClose={handleClose}
       >
-        <div style={modalStyle} className={classes.paper}>
+        <div className={classes.paper}>
           <TextField
             {...input}
             multiline
-            style={{ width: "400px" }}
+            className={classes.textField}
             rows="17"
             variant="outlined"
-            onChange={event => {
-              setCurrentNote(event.target.value);
-              updateNote(activeNoteId, event.target.value);
-            }}
+            onChange={saveNoteText}
             value={currentNote}
           />
         </div>
@@ -78,5 +53,20 @@ function SimpleModal({
     </div>
   );
 }
-
 export default connect(null, mapDispatchToProps)(SimpleModal);
+SimpleModal.propTypes = {
+  open: PropTypes.bool,
+  currentNote: PropTypes.string,
+  setCurrentNote: PropTypes.func,
+  updateNoteAction: PropTypes.func,
+  activeNoteId: PropTypes.string,
+  handleClose: PropTypes.func,
+  input: PropTypes.objectOf(
+    PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.bool
+    ])
+  )
+};

@@ -7,15 +7,11 @@ export const deleteNoteAction = noteId => ({
   type: DELETE_NOTE,
   payload: { noteId }
 });
-export const addNoteAction = (values, notes, noteId, folderId) => ({
+export const addNoteAction = (notes, noteId, folderId) => ({
   type: ADD_NOTE,
-  payload: { notesName: values, notes: notes, id: noteId, folderId: folderId }
+  payload: { notes, id: noteId, folderId }
 });
 export const updateNoteAction = (noteId, noteMessage) => ({
   type: UPDATE_NOTE,
   payload: { noteId, noteMessage }
-});
-export const updateNoteNameAction = (noteId, noteName) => ({
-  type: UPDATE_NOTE_NAME,
-  payload: { noteId, noteName }
 });

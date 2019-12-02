@@ -1,65 +1,58 @@
-import React, { useState } from "react";
+import React from "react";
 import Paper from "@material-ui/core/Paper";
 import createNotes from "../../assets/add_note.svg";
 import delNotes from "../../assets/delete_note.svg";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
+import { bindActionCreators } from "redux";
+import uuid from "uuid";
 import { addNoteAction, deleteNoteAction } from "../../redux/notes/actions";
-
-export const iconsStyles = makeStyles(theme => ({
-  header: {
-    width: 750,
-    background: "#d3d3d3"
-  },
-  icons: {
-    display: "flex",
-    flexDirection: "row",
-    marginLeft: 150,
-    width: 200
-  },
-  iconsNote: {
-    width: 15,
-    height: 15,
-    cursor: "pointer",
-    background: "white",
-    padding: "2px 5px"
-  }
-}));
-
-const generateUniqueId = require("uuid/v1");
+import { iconsStyles } from "./styles";
+import PropTypes from "prop-types";
 
 const mapStateToProps = state => {
   return {
     folderId: state.folders.currentFolder,
-    dataFolder: state.folders.data
+    dataFolder: state.folders.data,
+    dataNotes: state.notes.data
   };
 };
-
 const mapDispatchToProps = dispatch => {
-  return {
-    addNote: (values, notes, noteId, folderId) => {
-      dispatch(addNoteAction(values, notes, noteId, folderId));
+  return bindActionCreators(
+    {
+      addNoteAction,
+      deleteNoteAction
     },
-    deleteNote: noteId => {
-      dispatch(deleteNoteAction(noteId));
-    }
-  };
+    dispatch
+  );
 };
 
-const Header = ({ addNote, deleteNote, folderId, noteId, dataFolder }) => {
+const Header = ({
+  addNoteAction,
+  deleteNoteAction,
+  folderId,
+  noteId,
+  dataFolder,
+  dataNotes
+}) => {
   const classes = iconsStyles();
   const notes = "";
   const submitData = () => {
-    const noteId = generateUniqueId();
-    const values = "New Note";
-    addNote(values, notes, noteId, folderId);
+    const noteId = uuid.v1();
+    const del = dataNotes.find(note => note.notes === "");
+    if (del !== undefined) {
+      deleteNoteAction(del.id);
+    }
+    addNoteAction(notes, noteId, folderId);
+  };
+  const deleteNote = param1 => () => {
+    deleteNoteAction(param1);
   };
   const activeFolder = dataFolder.find(i => i.id === folderId);
   return (
     <Paper className={classes.header}>
       <div className={classes.icons}>
         <button
-          style={{ outline: "none", border: "none" }}
+          className={classes.btnIcon}
           onClick={submitData}
           disabled={
             activeFolder !== undefined && folderId === activeFolder.id
@@ -74,10 +67,8 @@ const Header = ({ addNote, deleteNote, folderId, noteId, dataFolder }) => {
           />
         </button>
         <button
-          style={{ outline: "none", border: "none" }}
-          onClick={() => {
-            deleteNote(noteId);
-          }}
+          className={classes.btnIcon}
+          onClick={deleteNote(noteId)}
           disabled={
             activeFolder !== undefined && folderId === activeFolder.id
               ? false
@@ -92,3 +83,15 @@ const Header = ({ addNote, deleteNote, folderId, noteId, dataFolder }) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
+Header.propTypes = {
+  addNoteAction: PropTypes.func,
+  deleteNoteAction: PropTypes.func,
+  folderId: PropTypes.string,
+  noteId: PropTypes.string,
+  dataFolder: PropTypes.arrayOf(
+    PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string]))
+  ),
+  dataNotes: PropTypes.arrayOf(
+    PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string]))
+  )
+};

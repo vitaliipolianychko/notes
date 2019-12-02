@@ -4,126 +4,145 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import TextField from "@material-ui/core/TextField";
-import Paper from "@material-ui/core/Paper";
-import editNote from "../../assets/edit.svg";
+import createNotes from "../../assets/add_note.svg";
+import delPicture from "../../assets/delete_note.svg";
+import uuid from "uuid";
 import { customUseStyles } from "./styles.js";
-import { useStyles } from "../styles";
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import {
-  updateNoteNameAction,
-  updateNoteAction
+  updateNoteAction,
+  addNoteAction,
+  deleteNoteAction
 } from "../../redux/notes/actions";
 import SimpleModal from "../Modal";
+import PropTypes from "prop-types";
 
 const mapStateToProps = state => {
   return {
     dataNotes: state.notes.data,
+    dataFolder: state.folders.data,
     folderId: state.folders.currentFolder
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return {
-    updateNoteName: (noteId, noteName) => {
-      dispatch(updateNoteNameAction(noteId, noteName));
+  return bindActionCreators(
+    {
+      updateNoteAction,
+      addNoteAction,
+      deleteNoteAction
     },
-    updateNote: (noteId, messageNote) => {
-      dispatch(updateNoteAction(noteId, messageNote));
-    }
-  };
+    dispatch
+  );
 };
 
 function CustomNotes({
-  updateNoteName,
   dataNotes,
+  dataFolder,
   folderId,
   setNoteId,
-  updateNote,
+  updateNoteAction,
+  addNoteAction,
+  deleteNoteAction,
   input
 }) {
   const classes = customUseStyles();
-  const classesOne = useStyles();
   const [activeNoteId, setActiveNoteId] = useState("");
   const [currentNote, setCurrentNote] = useState("");
-  const [currentNoteName, setCurrentNoteName] = useState("");
-  const [editNoteName, setEditNoteName] = useState(false);
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
     setOpen(false);
   };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const notes = "";
+  const createNote = () => {
+    const noteId = uuid.v1();
+    const del = dataNotes.find(note => note.notes === "");
+    if (del !== undefined) {
+      deleteNoteAction(del.id);
+    }
+    addNoteAction(notes, noteId, folderId);
+    setActiveNoteId(noteId);
+  };
+  const delFolder = () => {
+    deleteNoteAction(activeNoteId);
+  };
+  const activeFolder = dataFolder.find(i => i.id === folderId);
   const test = dataNotes.find(i => i.id === activeNoteId);
   const handleChange = event => {
     setCurrentNote(event.target.value);
-    updateNote(activeNoteId, event.target.value);
+    updateNoteAction(activeNoteId, event.target.value);
+  };
+  const getInfoNote = (param1, param2) => () => {
+    setActiveNoteId(param1);
+    setNoteId(param1);
+    setCurrentNote(param2);
   };
   return (
-    <Paper className={classes.root}>
-      <Paper className={classes.leftSide}>
+    <div className={classes.root}>
+      <div className={classes.leftSide}>
+        <div className={classes.backTableRoot}>
+          Notes
+          <div className={classes.responsive}>
+            <button
+              type="button"
+              onClick={createNote}
+              disabled={
+                activeFolder !== undefined && folderId === activeFolder.id
+                  ? false
+                  : true
+              }
+              className={classes.buttonsResponsive}
+            >
+              <img
+                src={createNotes}
+                className={classes.picture}
+                alt="add note"
+              />
+            </button>
+          </div>
+        </div>
         <Table>
           <TableBody>
             {dataNotes.map(
-              note =>
+              (note, index) =>
                 folderId === note.folderId && (
                   <TableRow
+                    key={index}
                     className={
-                      activeNoteId !== note.id
-                        ? classesOne.row
-                        : classes.rowActive
+                      activeNoteId !== note.id ? classes.row : classes.rowActive
                     }
                   >
-                    {editNoteName && activeNoteId === note.id ? (
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <input
-                          style={{
-                            width: "195px",
-                            height: "20px"
-                          }}
-                          name="changeName"
-                          value={currentNoteName}
-                          autoFocus
-                          onChange={event => {
-                            setCurrentNoteName(event.target.value);
-                            event.target.value !== ""
-                              ? updateNoteName(activeNoteId, event.target.value)
-                              : updateNoteName(activeNoteId, "New Note");
-                          }}
-                          onBlur={() => {
-                            setEditNoteName(false);
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <TableCell
-                        className={classes.notes}
-                        onClick={() => {
-                          setActiveNoteId(note.id);
-                          setNoteId(note.id);
-                          setCurrentNoteName(note.notesName);
-                          setCurrentNote(note.notes);
-                        }}
-                        onDoubleClick={() => setOpen(true)}
-                      >
-                        {note.notesName}
-                        <div
-                          onClick={() => {
-                            setCurrentNoteName(note.notesName);
-                            setEditNoteName(true);
-                          }}
+                    <TableCell
+                      key={note.id}
+                      onClick={getInfoNote(note.id, note.notes)}
+                      onDoubleClick={handleOpen}
+                    >
+                      <div className={classes.responsiveFolder}>
+                        <div className={classes.content}>{note.notes}</div>
+                        <button
+                          type="button"
+                          className={classes.buttonsResponsive}
+                          onClick={delFolder}
                         >
                           <img
-                            className={classes.img}
-                            src={editNote}
-                            alt="edit Note"
+                            src={delPicture}
+                            className={classes.menuPictures}
+                            alt="delete folder"
                           />
-                        </div>
-                      </TableCell>
-                    )}
+                        </button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 )
             )}
           </TableBody>
         </Table>
-      </Paper>
+      </div>
+
       <SimpleModal
         open={open}
         handleClose={handleClose}
@@ -139,14 +158,34 @@ function CustomNotes({
         }
         rows="17"
         className={classes.textField}
-        variant="outlined"
         onChange={handleChange}
         value={
           test !== undefined && folderId === test.folderId ? test.notes : ""
         }
       />
-    </Paper>
+    </div>
   );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CustomNotes);
+CustomNotes.propTypes = {
+  dataNotes: PropTypes.arrayOf(
+    PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string]))
+  ),
+  dataFolder: PropTypes.arrayOf(
+    PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string]))
+  ),
+  folderId: PropTypes.string,
+  setNoteId: PropTypes.func,
+  updateNoteAction: PropTypes.func,
+  addNoteAction: PropTypes.func,
+  deleteNoteAction: PropTypes.func,
+  input: PropTypes.objectOf(
+    PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.bool
+    ])
+  )
+};

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import CustomizedTables from "./components/Folder";
+import Folder from "./components/Folder";
 import CustomNotes from "./components/Notes";
 import Header from "./components/Header";
 
@@ -10,7 +10,7 @@ function App() {
     <div className="notes">
       <Header noteId={noteId} />
       <div className="App">
-        <CustomizedTables />
+        <Folder />
         <CustomNotes setNoteId={setNoteId} />
       </div>
     </div>
