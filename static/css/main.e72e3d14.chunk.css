@@ -1,0 +1,2 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat&display=swap);body{margin:auto;font-family:Montserrat,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.notes{width:750px;flex-direction:column;position:absolute;top:50%;left:50%;margin-right:-50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.App,.notes{display:flex}.App{flex-direction:row}@media only screen and (max-width:768px){.App{display:flex;flex-direction:column}.notes{width:300px}}
+/*# sourceMappingURL=main.e72e3d14.chunk.css.map */
