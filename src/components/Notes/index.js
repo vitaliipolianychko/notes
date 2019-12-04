@@ -81,6 +81,7 @@ function CustomNotes({
     setNoteId(param1);
     setCurrentNote(param2);
   };
+  const disableBtn = activeFolder && folderId === activeFolder.id;
   return (
     <div className={classes.root}>
       <div className={classes.leftSide}>
@@ -90,11 +91,7 @@ function CustomNotes({
             <button
               type="button"
               onClick={createNote}
-              disabled={
-                activeFolder !== undefined && folderId === activeFolder.id
-                  ? false
-                  : true
-              }
+              disabled={!disableBtn}
               className={classes.buttonsResponsive}
             >
               <img
