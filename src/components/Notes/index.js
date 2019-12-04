@@ -61,7 +61,7 @@ function CustomNotes({
   const createNote = () => {
     const noteId = uuid.v1();
     const del = dataNotes.find(note => note.notes === "");
-    if (del !== undefined) {
+    if (del) {
       deleteNoteAction(del.id);
     }
     addNoteAction(notes, noteId, folderId);
@@ -71,7 +71,7 @@ function CustomNotes({
     deleteNoteAction(activeNoteId);
   };
   const activeFolder = dataFolder.find(i => i.id === folderId);
-  const test = dataNotes.find(i => i.id === activeNoteId);
+  const activeNote = dataNotes.find(i => i.id === activeNoteId);
   const handleChange = event => {
     setCurrentNote(event.target.value);
     updateNoteAction(activeNoteId, event.target.value);
@@ -81,7 +81,8 @@ function CustomNotes({
     setNoteId(param1);
     setCurrentNote(param2);
   };
-  const disableBtn = activeFolder && folderId === activeFolder.id;
+  const activeBtn = activeFolder && folderId === activeFolder.id;
+  const activeField = activeNote && folderId === activeNote.folderId;
   return (
     <div className={classes.root}>
       <div className={classes.leftSide}>
@@ -91,7 +92,7 @@ function CustomNotes({
             <button
               type="button"
               onClick={createNote}
-              disabled={!disableBtn}
+              disabled={!activeBtn}
               className={classes.buttonsResponsive}
             >
               <img
@@ -150,14 +151,12 @@ function CustomNotes({
       <TextField
         {...input}
         multiline
-        disabled={
-          test !== undefined && folderId === test.folderId ? false : true
-        }
+        disabled={!activeField}
         rows="17"
         className={classes.textField}
         onChange={handleChange}
         value={
-          test !== undefined && folderId === test.folderId ? test.notes : ""
+          activeNote && folderId === activeNote.folderId ? activeNote.notes : ""
         }
       />
     </div>

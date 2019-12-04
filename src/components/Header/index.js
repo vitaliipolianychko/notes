@@ -49,14 +49,14 @@ const Header = ({
     deleteNoteAction(param1);
   };
   const activeFolder = dataFolder.find(i => i.id === folderId);
-  const disableBtn = activeFolder && folderId === activeFolder.id;
+  const activeBtn = activeFolder && folderId === activeFolder.id;
   return (
     <Paper className={classes.header}>
       <div className={classes.icons}>
         <button
           className={classes.btnIcon}
           onClick={submitData}
-          disabled={!disableBtn}
+          disabled={!activeBtn}
         >
           <img
             src={createNotes}
@@ -67,7 +67,7 @@ const Header = ({
         <button
           className={classes.btnIcon}
           onClick={deleteNote(noteId)}
-          disabled={!disableBtn}
+          disabled={!activeBtn}
         >
           <img src={delNotes} className={classes.iconsNote} alt="delete note" />
         </button>

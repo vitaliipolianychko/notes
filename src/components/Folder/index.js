@@ -72,10 +72,10 @@ function Folder({
   const editFolder = () => {
     setEditFolderName(true);
   };
-  const saveEditFolder = event => {
-    setCurrentNameFolder(event.target.value);
-    event.target.value !== ""
-      ? updateFolderNameAction(activeFolder, event.target.value)
+  const saveEditFolder = e => {
+    setCurrentNameFolder(e.target.value);
+    e.target.value
+      ? updateFolderNameAction(activeFolder, e.target.value)
       : updateFolderNameAction(activeFolder, "New Folder");
   };
   const loseFocus = () => {
